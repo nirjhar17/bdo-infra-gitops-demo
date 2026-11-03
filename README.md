@@ -26,4 +26,4 @@ After sync, verify ResourceQuota `team-budget`, LimitRange `container-defaults`,
 
 ## Scope
 
-This repository contains namespace provisioning and ACM namespace governance. It does not start an upgrade. A completed earlier SNO upgrade is separate historical evidence, not a fresh BDO rehearsal.
+This repository contains namespace provisioning, ACM namespace governance, and an execution-disabled SNO upgrade process preview in `acm/upgrade`. The upgrade policy remains in inform mode, and its ClusterGroupUpgrade has `enable: false`, `preCaching: false` and `backup: false`. No upgrade is started by a preview sync. The upgrade preview uses its own `bdo-upgrade-policies` namespace and `bdo-upgrade` AppProject. See `acm/upgrade/README.md` for the GUI application fields and release provenance.

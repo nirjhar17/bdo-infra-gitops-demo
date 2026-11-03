@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bdo-upgrade-policies
+---
+apiVersion: cluster.open-cluster-management.io/v1beta2
+kind: ManagedClusterSetBinding
+metadata:
+  name: default
+  namespace: bdo-upgrade-policies
+spec:
+  clusterSet: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: bdo-upgrade-writer
+  namespace: bdo-upgrade-policies
+rules:
+  - apiGroups: [policy.open-cluster-management.io]
+    resources: [policies, placementbindings]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [cluster.open-cluster-management.io]
+    resources: [placements]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [ran.openshift.io]
+    resources: [clustergroupupgrades]
+    verbs: [get, list, watch, create, update, patch, delete]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: bdo-upgrade-writer
+  namespace: bdo-upgrade-policies
+subjects:
+  - kind: ServiceAccount
+    name: openshift-gitops-argocd-application-controller
+    namespace: openshift-gitops
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: bdo-upgrade-writer

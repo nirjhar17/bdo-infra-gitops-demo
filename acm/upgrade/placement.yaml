@@ -1,0 +1,28 @@
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: bdo-sno-upgrade
+  namespace: bdo-upgrade-policies
+spec:
+  clusterSets:
+    - default
+  numberOfClusters: 1
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchLabels:
+            name: globe-sno-lab
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: bdo-sno-upgrade
+  namespace: bdo-upgrade-policies
+placementRef:
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+  name: bdo-sno-upgrade
+subjects:
+  - apiGroup: policy.open-cluster-management.io
+    kind: Policy
+    name: bdo-sno-upgrade-4-20-43

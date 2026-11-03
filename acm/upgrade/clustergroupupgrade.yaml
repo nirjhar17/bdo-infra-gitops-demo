@@ -1,0 +1,16 @@
+apiVersion: ran.openshift.io/v1alpha1
+kind: ClusterGroupUpgrade
+metadata:
+  name: bdo-sno-upgrade-preview
+  namespace: bdo-upgrade-policies
+spec:
+  enable: false
+  clusters:
+    - globe-sno-lab
+  managedPolicies:
+    - bdo-sno-upgrade-4-20-43
+  remediationStrategy:
+    maxConcurrency: 1
+    timeout: 240
+  preCaching: false
+  backup: false
