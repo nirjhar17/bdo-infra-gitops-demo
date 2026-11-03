@@ -9,17 +9,20 @@ The previously completed Globe upgrade reached 4.20.42. This policy describes 4.
 - `policy-upgrade-4.20.43.yaml`: both the outer Policy and embedded ConfigurationPolicy use `remediationAction: inform`. The definition checks the requested release and a completed update history entry. It cannot request an upgrade while in inform mode.
 - `placement.yaml`: selects only `globe-sno-lab`, using BDO-specific Placement and PlacementBinding objects.
 - `clustergroupupgrade.yaml`: sets `spec.enable: false`, `preCaching: false`, and `backup: false`. TALM must not start remediation. The selected policy is listed in `managedPolicies`; `maxConcurrency: 1` illustrates one cluster at a time.
-- `kustomization.yaml`: groups the policy, placement, binding and disabled rollout resource for one manual Argo CD sync.
+- `kustomization.yaml`: groups the policy, placement, binding and disabled rollout resource for two selected-resource manual Argo CD syncs.
 
 All hub objects are isolated in `bdo-upgrade-policies`. No existing Globe policy or completed CGU is modified. Administrator preparation is in `bootstrap/upgrade-permissions.yaml` and `bootstrap/upgrade-appproject.yaml`.
 
 ## Preview sequence
 
-1. Show the current SNO version and the requested 4.20.43 target in Git.
-2. Show both inform settings and the CGU's disabled enable flag.
-3. Create an Argo CD Application named `bdo-sno-upgrade`, project `bdo-upgrade`, revision `main`, path `acm/upgrade`, destination cluster `https://kubernetes.default.svc`, namespace `bdo-upgrade-policies`, with manual sync and pruning disabled.
-4. Inspect the diff and sync. Inspect the SNO-specific policy result in ACM and the version mismatch details.
-5. Show the disabled CGU and unchanged cluster version. Do not enable it during this demo or change the source policy to enforce.
+1. Show the current SNO version and the requested 4.20.43 target in Git, keeping both policy levels in inform mode.
+2. Create an Argo CD Application named `bdo-sno-upgrade`, project `bdo-upgrade`, revision `main`, path `acm/upgrade`, destination cluster `https://kubernetes.default.svc`, namespace `bdo-upgrade-policies`, with manual sync and pruning disabled.
+3. In the first Sync dialog, deselect the ClusterGroupUpgrade. Sync only Policy, Placement and PlacementBinding. Overall OutOfSync is expected while the CGU remains deliberately absent.
+4. In ACM, show the SNO-specific NonCompliant result and version mismatch details.
+5. Now open `clustergroupupgrade.yaml` in Git and explain clusters, managedPolicies, concurrency and `enable: false` before creating it.
+6. In the second Sync dialog, select only ClusterGroupUpgrade. Synchronize it and verify it remains disabled and the SNO stays at 4.20.42. Do not enable the CGU or change source policies to enforce.
+
+Argo CD selective sync does not run hooks or add normal sync-history entries; this preview uses no hooks.
 
 In a future separately approved rollout, enabling a valid CGU lets TALM coordinate remediation of its listed inform policies. Actual execution still depends on cluster readiness and OpenShift update preconditions. Multiple clusters and a concurrency limit illustrate fleet rollout; this lab targets one SNO and does not demonstrate fleet scale.
 
