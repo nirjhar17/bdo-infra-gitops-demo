@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: bdo-direct
+  namespace: openshift-gitops
+spec:
+  sourceRepos:
+    - https://github.com/nirjhar17/bdo-infra-gitops-demo.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: bdo-payments-dev
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: ResourceQuota
+    - group: ""
+      kind: LimitRange
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding

@@ -1,0 +1,5 @@
+*kubeconfig*
+*credentials*
+*.key
+.env
+.DS_Store

@@ -1,0 +1,72 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: bdo-acm-workspace
+  namespace: bdo-acm-policies
+spec:
+  disabled: false
+  remediationAction: enforce
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: bdo-acm-workspace-config
+        spec:
+          remediationAction: enforce
+          severity: low
+          pruneObjectBehavior: None
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1
+                kind: Namespace
+                metadata:
+                  name: bdo-acm-demo
+                  labels:
+                    platform.example.com/team: bdo-acm
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: RoleBinding
+                metadata:
+                  name: developers-edit
+                  namespace: bdo-acm-demo
+                subjects:
+                  - kind: Group
+                    apiGroup: rbac.authorization.k8s.io
+                    name: bdo-acm-developers
+                roleRef:
+                  apiGroup: rbac.authorization.k8s.io
+                  kind: ClusterRole
+                  name: edit
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1
+                kind: ResourceQuota
+                metadata:
+                  name: team-budget
+                  namespace: bdo-acm-demo
+                spec:
+                  hard:
+                    requests.cpu: "2"
+                    requests.memory: 4Gi
+                    limits.cpu: "4"
+                    limits.memory: 8Gi
+                    pods: "20"
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1
+                kind: LimitRange
+                metadata:
+                  name: container-defaults
+                  namespace: bdo-acm-demo
+                spec:
+                  limits:
+                    - type: Container
+                      defaultRequest:
+                        cpu: 100m
+                        memory: 128Mi
+                      default:
+                        cpu: 500m
+                        memory: 512Mi
