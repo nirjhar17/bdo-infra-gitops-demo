@@ -20,7 +20,7 @@ After sync, verify ResourceQuota `team-budget`, LimitRange `container-defaults`,
 
 ## Second walkthrough: ACM governance
 
-`acm/namespace` contains a BDO Policy, Placement and PlacementBinding. It creates a different namespace, `bdo-acm-demo`, through ACM. Policies live in `bdo-acm-policies` and target only `local-cluster`. Argo CD delivers the policy; the ACM configuration-policy controller manages tenant resources. The direct application does not manage this namespace.
+`acm/namespace` contains a BDO Policy, Placement and PlacementBinding. It creates a different namespace, `bdo-acm-demo`, through ACM. Policies live in `bdo-acm-policies` and target only `local-cluster`. The policy starts in inform mode: Argo CD delivers it, and ACM reports NonCompliant while the tenant resources are missing. Change both remediationAction entries to enforce through a reviewed Git change, merge and Sync. The ACM configuration-policy controller then creates the resources and reports Compliant. The direct application does not manage this namespace.
 
 `bootstrap` contains administrator preparation, outside the folders watched by the applications. Do not sync the repository root. The private local HTML guide contains the full GUI walkthrough; it is intentionally excluded from this repository.
 
